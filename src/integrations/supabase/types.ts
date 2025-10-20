@@ -14,13 +14,278 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      academic_terms: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          id: string
+          is_current: boolean | null
+          name: string
+          school_id: string
+          start_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          id?: string
+          is_current?: boolean | null
+          name: string
+          school_id: string
+          start_date: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          is_current?: boolean | null
+          name?: string
+          school_id?: string
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academic_terms_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          academic_term_id: string | null
+          created_at: string | null
+          form_teacher_id: string | null
+          grade_level: string
+          id: string
+          name: string
+          school_id: string
+          student_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          academic_term_id?: string | null
+          created_at?: string | null
+          form_teacher_id?: string | null
+          grade_level: string
+          id?: string
+          name: string
+          school_id: string
+          student_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          academic_term_id?: string | null
+          created_at?: string | null
+          form_teacher_id?: string | null
+          grade_level?: string
+          id?: string
+          name?: string
+          school_id?: string
+          student_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_academic_term_id_fkey"
+            columns: ["academic_term_id"]
+            isOneToOne: false
+            referencedRelation: "academic_terms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_form_teacher_id_fkey"
+            columns: ["form_teacher_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schools: {
+        Row: {
+          address: string | null
+          contact_email: string
+          contact_phone: string | null
+          created_at: string | null
+          district: string | null
+          established_year: number | null
+          gender_type: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          motto: string | null
+          name: string
+          primary_color: string | null
+          region: string | null
+          residency_type: string | null
+          secondary_color: string | null
+          slug: string
+          student_count: number | null
+          teacher_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          contact_email: string
+          contact_phone?: string | null
+          created_at?: string | null
+          district?: string | null
+          established_year?: number | null
+          gender_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          motto?: string | null
+          name: string
+          primary_color?: string | null
+          region?: string | null
+          residency_type?: string | null
+          secondary_color?: string | null
+          slug: string
+          student_count?: number | null
+          teacher_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          contact_email?: string
+          contact_phone?: string | null
+          created_at?: string | null
+          district?: string | null
+          established_year?: number | null
+          gender_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          motto?: string | null
+          name?: string
+          primary_color?: string | null
+          region?: string | null
+          residency_type?: string | null
+          secondary_color?: string | null
+          slug?: string
+          student_count?: number | null
+          teacher_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      subjects: {
+        Row: {
+          category: string | null
+          code: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          school_id: string
+        }
+        Insert: {
+          category?: string | null
+          code?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          school_id: string
+        }
+        Update: {
+          category?: string | null
+          code?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subjects_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          date_of_birth: string | null
+          email: string
+          full_name: string
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          last_login: string | null
+          phone_number: string | null
+          profile_image: string | null
+          role: string
+          school_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          email: string
+          full_name: string
+          gender?: string | null
+          id: string
+          is_active?: boolean | null
+          last_login?: string | null
+          phone_number?: string | null
+          profile_image?: string | null
+          role: string
+          school_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string
+          full_name?: string
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_login?: string | null
+          phone_number?: string | null
+          profile_image?: string | null
+          role?: string
+          school_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_school_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_superadmin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
