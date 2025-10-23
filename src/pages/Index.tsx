@@ -17,18 +17,28 @@ const Index = () => {
       return;
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role, school_id, schools(slug)")
-      .eq("id", session.user.id)
-      .single();
+    // Fetch user data and roles
+    const [userResult, rolesResult] = await Promise.all([
+      supabase
+        .from("users")
+        .select("school_id, schools(slug)")
+        .eq("id", session.user.id)
+        .single(),
+      supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+    ]);
 
-    if (userData) {
-      if (userData.role === "superadmin") {
+    const userData = userResult.data;
+    const userRole = rolesResult.data?.[0]?.role;
+
+    if (userData && userRole) {
+      if (userRole === "superadmin") {
         navigate("/superadmin/dashboard");
       } else {
         const schoolSlug = userData.schools?.slug || "";
-        navigate(`/portal/${schoolSlug}/${userData.role}/dashboard`);
+        navigate(`/portal/${schoolSlug}/${userRole}/dashboard`);
       }
     } else {
       navigate("/auth");

@@ -33,21 +33,32 @@ const Auth = () => {
       if (error) throw error;
 
       if (data.user) {
-        const { data: userData, error: userError } = await supabase
-          .from("users")
-          .select("role, school_id, schools(slug)")
-          .eq("id", data.user.id)
-          .single();
+        // Fetch user data and roles
+        const [userResult, rolesResult] = await Promise.all([
+          supabase
+            .from("users")
+            .select("school_id, schools(slug)")
+            .eq("id", data.user.id)
+            .single(),
+          supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.user.id)
+        ]);
 
-        if (userError) throw userError;
+        if (userResult.error) throw userResult.error;
+        if (rolesResult.error) throw rolesResult.error;
+
+        const userData = userResult.data;
+        const userRole = rolesResult.data?.[0]?.role;
 
         toast.success("Welcome back!");
         
-        if (userData.role === "superadmin") {
+        if (userRole === "superadmin") {
           navigate("/superadmin/dashboard");
         } else {
           const schoolSlug = userData.schools?.slug || "";
-          navigate(`/portal/${schoolSlug}/${userData.role}/dashboard`);
+          navigate(`/portal/${schoolSlug}/${userRole}/dashboard`);
         }
       }
     } catch (error: any) {

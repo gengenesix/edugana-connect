@@ -30,13 +30,14 @@ const SuperAdminDashboard = () => {
       return;
     }
 
-    const { data: userData } = await supabase
-      .from("users")
+    const { data: rolesData } = await supabase
+      .from("user_roles")
       .select("role")
-      .eq("id", session.user.id)
-      .single();
+      .eq("user_id", session.user.id);
 
-    if (userData?.role !== "superadmin") {
+    const userRole = rolesData?.[0]?.role;
+
+    if (userRole !== "superadmin") {
       toast.error("Unauthorized access");
       navigate("/auth");
     }
