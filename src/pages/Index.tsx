@@ -23,7 +23,7 @@ const Index = () => {
         .from("users")
         .select("school_id, schools(slug)")
         .eq("id", session.user.id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from("user_roles")
         .select("role")

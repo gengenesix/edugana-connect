@@ -39,7 +39,7 @@ const Auth = () => {
             .from("users")
             .select("school_id, schools(slug)")
             .eq("id", data.user.id)
-            .single(),
+            .maybeSingle(),
           supabase
             .from("user_roles")
             .select("role")
@@ -51,6 +51,15 @@ const Auth = () => {
 
         const userData = userResult.data;
         const userRole = rolesResult.data?.[0]?.role;
+
+        // Validate user data exists
+        if (!userData) {
+          throw new Error("User profile not found. Please contact support.");
+        }
+
+        if (!userRole) {
+          throw new Error("User role not assigned. Please contact support.");
+        }
 
         toast.success("Welcome back!");
         
@@ -80,6 +89,7 @@ const Auth = () => {
           data: {
             full_name: signupFullName,
           },
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 
