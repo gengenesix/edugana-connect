@@ -63,7 +63,7 @@ const SuperAdminNewSchool = () => {
       if (error) throw error;
 
       toast.success("School created successfully!");
-      navigate(`/superadmin/schools/${data.id}`);
+      navigate(`/superadmin/schools/${data.slug}`);
     } catch (error: any) {
       toast.error(error.message || "Failed to create school");
     } finally {

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,12 @@ import { GraduationCap } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const schoolSlug = searchParams.get("school");
+  const isSuperAdmin = searchParams.get("role") === "superadmin";
+  
   const [loading, setLoading] = useState(false);
+  const [schoolName, setSchoolName] = useState("");
   
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -19,6 +24,40 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupFullName, setSignupFullName] = useState("");
+
+  useEffect(() => {
+    if (!isSuperAdmin && !schoolSlug) {
+      navigate("/select-school");
+      return;
+    }
+
+    if (schoolSlug) {
+      fetchSchoolName();
+    }
+  }, [schoolSlug, isSuperAdmin]);
+
+  const fetchSchoolName = async () => {
+    if (!schoolSlug) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("schools")
+        .select("name")
+        .eq("slug", schoolSlug)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) {
+        setSchoolName(data.name);
+      } else {
+        toast.error("School not found");
+        navigate("/select-school");
+      }
+    } catch (error) {
+      console.error("Failed to fetch school:", error);
+      navigate("/select-school");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,13 +100,20 @@ const Auth = () => {
           throw new Error("User role not assigned. Please contact support.");
         }
 
+        // Verify user belongs to this school (if not superadmin)
+        if (!isSuperAdmin && userRole !== "superadmin") {
+          if (userData.schools?.slug !== schoolSlug) {
+            throw new Error("You do not have access to this school.");
+          }
+        }
+
         toast.success("Welcome back!");
         
         if (userRole === "superadmin") {
           navigate("/superadmin/dashboard");
         } else {
-          const schoolSlug = userData.schools?.slug || "";
-          navigate(`/portal/${schoolSlug}/${userRole}/dashboard`);
+          const userSchoolSlug = userData.schools?.slug || "";
+          navigate(`/portal/${userSchoolSlug}/${userRole}/dashboard`);
         }
       }
     } catch (error: any) {
@@ -113,10 +159,26 @@ const Auth = () => {
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">EduGhana OS</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            {isSuperAdmin ? "SuperAdmin Login" : schoolName || "EduGhana OS"}
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Transforming Education Across Ghana's Free SHS Schools
+            {isSuperAdmin 
+              ? "Access the SuperAdmin Dashboard" 
+              : schoolName 
+                ? `Login to access ${schoolName}'s portal`
+                : "Transforming Education Across Ghana's Free SHS Schools"}
           </p>
+          {!isSuperAdmin && (
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => navigate("/select-school")}
+              className="mt-2"
+            >
+              Change School
+            </Button>
+          )}
         </div>
 
         {/* Auth Card */}

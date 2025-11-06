@@ -102,7 +102,7 @@ const SuperAdminSchools = () => {
               <Card
                 key={school.id}
                 className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/superadmin/schools/${school.id}`)}
+                onClick={() => navigate(`/superadmin/schools/${school.slug}`)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
